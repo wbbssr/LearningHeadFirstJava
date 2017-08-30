@@ -1,4 +1,4 @@
-import javax.swing.x;
+import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
 
