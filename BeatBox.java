@@ -34,15 +34,15 @@ public class BeatBox {
         buttonBox.add(start);
 
         JButton stop = new JButton("Stop");
-        start.addActionListener(new MyStopListener());
+        stop.addActionListener(new MyStopListener());
         buttonBox.add(stop);
 
         JButton upTempo = new JButton("Tempo Up");
-        start.addActionListener(new MyUpTempoListener());
+        upTempo.addActionListener(new MyUpTempoListener());
         buttonBox.add(upTempo);
 
         JButton downTempo = new JButton("Tempo Down");
-        start.addActionListener(new MyDownTempoListener());
+        downTempo.addActionListener(new MyDownTempoListener());
         buttonBox.add(downTempo);
 
         Box nameBox = new Box(BoxLayout.Y_AXIS);
@@ -87,11 +87,41 @@ public class BeatBox {
         }
     }
 
-    
-
     public void buildTrackAndStart() {
+        int[] trackList = null;
 
+        sequence.deleteTrack(track);
+        track = sequence.createTrack();
+
+        for (int i = 0; i < 16; i++) {
+            trackList = new int[16];
+
+            int key = instruments[i];
+
+            for (int j = 0; j < 16; j++) {
+                JCheckBox jc = (JCheckBox) checkboxList.get(j + (16 * i));
+                if (jc.isSelected()) {
+                    trackList[j] = key;
+                } else {
+                    trackList[j] = 0;
+                }
+
+                makeTracks(trackList);
+                track.add(makeEvent(176, 1, 127, 0, 16));
+            }
+        }
+
+        track.add(makeEvent(192, 9, 1, 0, 15));
+        try {
+            sequencer.setSequence(sequence);
+            sequencer.setLoopCount(sequencer.LOOP_CONTINUOUSLY);
+            sequencer.start();
+            sequencer.setTempoInBPM(120);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
+
 
     public class MyStartListener implements ActionListener {
         public void actionPerformed(ActionEvent a) {
@@ -135,9 +165,10 @@ public class BeatBox {
         try {
             ShortMessage a = new ShortMessage();
             a.setMessage(comd, chan, one, two);
-            event = new event(a, tick);
+            event = new MidiEvent(a, tick);
         } catch(Exception e) {
             e.printStackTrace();
         }
+        return event;
     }
 }
