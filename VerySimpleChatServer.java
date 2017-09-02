@@ -56,6 +56,8 @@ public class VerySimpleChatServer {
     }
 
     public void tellEveryone(String message) {
+        System.out.println(clientOutputStreams.size());
+
         Iterator it = clientOutputStreams.iterator();
         while (it.hasNext()){
             try {
